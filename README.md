@@ -19,11 +19,14 @@ Ce chatbot intelligent a été conçu pour permettre à tout citoyen de poser de
 ## 🚀 Utilisation
 
 ### Mode Standard (Navigateur uniquement)
+
 1. Ouvrez `index.html` dans votre navigateur.
 2. Le chatbot fonctionnera avec une recherche par mots-clés de base.
 
 ### Mode Avancé (Intelligence & Fon Local)
+
 Pour bénéficier de la recherche sémantique et d'une vraie traduction en Fongbé :
+
 1. Installez les dépendances : `pip install -r requirements.txt`
 2. Lancez le serveur : `python3 server.py`
 3. Rafraîchissez `index.html`. Le chatbot se connectera automatiquement au serveur local.
