@@ -72,15 +72,15 @@ document.addEventListener('DOMContentLoaded', () => {
         window.speechSynthesis.speak(utterance);
     }
 
-    // Recherche dans la base de connaissances (RAG thématique)
+    // Recherche dans la base de connaissances (RAG thématique v4)
     function searchKnowledge(query) {
         const stopWords = ['quel', 'quels', 'quelle', 'quelles', 'est', 'est-ce', 'que', 'pour', 'dans', 'le', 'la', 'les', 'des', 'du', 'une', 'un', 'projet', 'programme', 'societe', 'prevu', 'prevoyez'];
         const cleanQuery = query.toLowerCase().replace(/[?.,!]/g, '');
-        const queryWords = cleanQuery.split(' ').filter(w => w.length > 2 && !stopWords.includes(w));
+        // On garde les mots > 2 ou les chiffres isolés
+        const queryWords = cleanQuery.split(' ').filter(w => (w.length > 2 || /^\d+$/.test(w)) && !stopWords.includes(w));
         
         if (queryWords.length === 0) return null;
 
-        // Définition des thématiques clés pour forcer la pertinence
         const themes = {
             'agriculture': ['agriculture', 'paysan', 'agricole', 'terre', 'culture', 'climat', 'semence'],
             'sante': ['santé', 'hopital', 'médecin', 'soins', 'médical', 'maladie', 'vaccin'],
@@ -95,7 +95,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         paragraphs.forEach(p => {
             const text = p.toLowerCase();
-            const firstLine = text.split('\n')[0];
+            const lines = text.split('\n');
+            const firstLine = lines[0];
             let score = 0;
             
             queryWords.forEach(k => {
@@ -103,15 +104,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 const matches = (text.match(regex) || []).length;
                 
                 let weight = 1;
-                // Boost énorme si le mot est dans le TITRE du paragraphe (première ligne)
                 if (firstLine.includes(k)) weight = 50; 
-                // Boost si c'est un mot de la priorité
-                if (text.includes('priorité') && firstLine.includes(k)) weight = 100;
+                
+                // Boost massif pour "Priorité X"
+                if (text.includes('priorité') && firstLine.includes(k) && /^\d+$/.test(k)) weight = 500;
 
                 score += (matches * weight);
             });
 
-            // Boost thématique : si la requête contient un mot du thème ET le paragraphe aussi
             for (const theme in themes) {
                 const queryHasTheme = queryWords.some(qw => themes[theme].includes(qw));
                 const paraHasTheme = themes[theme].some(tw => firstLine.includes(tw));
