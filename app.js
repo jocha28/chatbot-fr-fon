@@ -72,29 +72,61 @@ document.addEventListener('DOMContentLoaded', () => {
         window.speechSynthesis.speak(utterance);
     }
 
-    // Recherche dans la base de connaissances (Simple Semantic/Keyword Search)
+    // Recherche dans la base de connaissances (RAG thématique)
     function searchKnowledge(query) {
-        const sentences = KNOWLEDGE_BASE.split(/[.!?\n]/);
-        const keywords = query.toLowerCase().split(' ').filter(w => w.length > 3);
+        const stopWords = ['quel', 'quels', 'quelle', 'quelles', 'est', 'est-ce', 'que', 'pour', 'dans', 'le', 'la', 'les', 'des', 'du', 'une', 'un', 'projet', 'programme', 'societe', 'prevu', 'prevoyez'];
+        const cleanQuery = query.toLowerCase().replace(/[?.,!]/g, '');
+        const queryWords = cleanQuery.split(' ').filter(w => w.length > 2 && !stopWords.includes(w));
         
-        let bestSentence = "";
-        let maxMatch = 0;
+        if (queryWords.length === 0) return null;
 
-        sentences.forEach(s => {
-            let matches = 0;
-            keywords.forEach(k => {
-                if (s.toLowerCase().includes(k)) matches++;
+        // Définition des thématiques clés pour forcer la pertinence
+        const themes = {
+            'agriculture': ['agriculture', 'paysan', 'agricole', 'terre', 'culture', 'climat', 'semence'],
+            'sante': ['santé', 'hopital', 'médecin', 'soins', 'médical', 'maladie', 'vaccin'],
+            'education': ['éducation', 'école', 'enseignement', 'élève', 'étudiant', 'formation', 'emploi'],
+            'cohesion': ['cohésion', 'justice', 'paix', 'liberté', 'démocratie', 'nationale', 'sécurité'],
+            'economie': ['économie', 'croissance', 'finance', 'entreprise', 'industrie', 'commerce']
+        };
+
+        const paragraphs = KNOWLEDGE_BASE.split(/\n\s*\n/);
+        let bestParagraph = "";
+        let maxScore = 0;
+
+        paragraphs.forEach(p => {
+            const text = p.toLowerCase();
+            const firstLine = text.split('\n')[0];
+            let score = 0;
+            
+            queryWords.forEach(k => {
+                const regex = new RegExp('\\b' + k + '\\b', 'g');
+                const matches = (text.match(regex) || []).length;
+                
+                let weight = 1;
+                // Boost énorme si le mot est dans le TITRE du paragraphe (première ligne)
+                if (firstLine.includes(k)) weight = 50; 
+                // Boost si c'est un mot de la priorité
+                if (text.includes('priorité') && firstLine.includes(k)) weight = 100;
+
+                score += (matches * weight);
             });
-            if (matches > maxMatch) {
-                maxMatch = matches;
-                bestSentence = s;
+
+            // Boost thématique : si la requête contient un mot du thème ET le paragraphe aussi
+            for (const theme in themes) {
+                const queryHasTheme = queryWords.some(qw => themes[theme].includes(qw));
+                const paraHasTheme = themes[theme].some(tw => firstLine.includes(tw));
+                if (queryHasTheme && paraHasTheme) score += 200;
+            }
+
+            if (score > 0) {
+                if (score > maxScore) {
+                    maxScore = score;
+                    bestParagraph = p;
+                }
             }
         });
 
-        if (maxMatch > 0) {
-            return bestSentence.trim() + ".";
-        }
-        return null;
+        return maxScore > 0 ? bestParagraph.trim() : null;
     }
 
     const fonResponses = {
