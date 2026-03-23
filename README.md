@@ -18,27 +18,18 @@ Ce chatbot intelligent a été conçu pour permettre à tout citoyen de poser de
 
 ## 🚀 Utilisation
 
-### Mode Standard (Navigateur uniquement)
-
-1. Ouvrez `index.html` dans votre navigateur.
-2. Le chatbot fonctionnera avec une recherche par mots-clés de base.
-
-### Mode Avancé (Intelligence & Fon Local)
-
-Pour bénéficier de la recherche sémantique et d'une vraie traduction en Fongbé :
-
-1. Installez les dépendances : `pip install -r requirements.txt`
-2. Lancez le serveur : `python3 server.py`
-3. Rafraîchissez `index.html`. Le chatbot se connectera automatiquement au serveur local.
+1. Clonez ce dépôt sur votre machine locale.
+2. Ouvrez le fichier `index.html` dans n'importe quel navigateur moderne (Chrome, Firefox, Safari).
+3. Sélectionnez votre langue préférée (FR ou FON).
+4. Tapez votre question ou utilisez le bouton **Micro** pour parler.
 
 ## 📄 Structure du Projet
 
 - `index.html` : Structure de l'application.
 - `style.css` : Design et animations premium.
-- `app.js` : Logique du chatbot et connexion au backend.
-- `server.py` : Serveur Python (FastAPI) pour l'IA locale (NLLB-200).
-- `requirements.txt` : Liste des bibliothèques Python nécessaires.
-- `knowledge.js` / `projet_de_societe.txt` : Base de connaissances.
+- `app.js` : Logique du chatbot, audio et traitement des questions.
+- `knowledge.js` : Base de connaissances extraite du programme social.
+- `projet_de_societe.txt` : Version textuelle brute du document source.
 
 ---
 *Développé pour favoriser la compréhension et l'interaction citoyenne autour du projet de société.*

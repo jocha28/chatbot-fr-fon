@@ -103,41 +103,21 @@ document.addEventListener('DOMContentLoaded', () => {
         "au revoir": "A d'abɔ̌ !"
     };
 
-    async function handleSend() {
+    function handleSend() {
         const text = userInput.value.trim();
         if (text === "") return;
 
         addMessage(text, 'user');
         userInput.value = "";
 
-        // On affiche un loader/indicateur (optionnel)
-        // addMessage("...", 'assistant-loading');
-
-        try {
-            // Tentative d'appel au backend Python local
-            const response = await fetch("http://localhost:8000/chat", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ text: text, lang: currentLang })
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                addMessage(data.response, 'assistant');
-                return;
-            }
-        } catch (error) {
-            console.log("Le backend Python n'est pas accessible. Utilisation du fallback local.");
-        }
-
-        // --- FALLBACK LOCAL (si le serveur Python n'est pas lancé) ---
         setTimeout(() => {
             let response = "";
             const found = searchKnowledge(text);
 
             if (currentLang === 'fr') {
-                response = found || "Désolé, je n'ai pas trouvé d'information spécifique dans le programme. (Lancez le serveur Python pour plus de précision)";
+                response = found || "Désolé, je n'ai pas trouvé d'information spécifique à ce sujet dans le programme. Pouvez-vous reformuler ?";
             } else {
+                // Simulation Fon
                 const lower = text.toLowerCase();
                 if (lower.includes("bonjour")) response = fonResponses.bonjour;
                 else if (lower.includes("merci")) response = fonResponses.merci;
