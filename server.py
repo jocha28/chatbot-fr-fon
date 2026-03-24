@@ -9,11 +9,19 @@ import io
 app = Flask(__name__)
 CORS(app)
 
-# Chargement du modèle MMS TTS Fon
-print("Chargement du modèle MMS TTS Fon (facebook/mms-tts-fon)...")
-model_id = "facebook/mms-tts-fon"
-model = VitsModel.from_pretrained(model_id)
-tokenizer = AutoTokenizer.from_pretrained(model_id)
+# Chargement du modèle MMS TTS Fon (Local)
+print("Chargement du modèle MMS TTS Fon depuis les fichiers locaux...")
+model_path = os.path.dirname(os.path.abspath(__file__))
+try:
+    model = VitsModel.from_pretrained(model_path)
+    tokenizer = AutoTokenizer.from_pretrained(model_path)
+    print("Modèle chargé avec succès depuis le répertoire local.")
+except Exception as e:
+    print(f"Erreur lors du chargement local : {e}")
+    print("Tentative de chargement depuis Hugging Face...")
+    model_id = "facebook/mms-tts-fon"
+    model = VitsModel.from_pretrained(model_id)
+    tokenizer = AutoTokenizer.from_pretrained(model_id)
 print("Modèle chargé avec succès.")
 
 @app.route('/tts', methods=['POST'])
