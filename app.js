@@ -65,11 +65,33 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Synthèse vocale
-    function speakText(text) {
-        if (!window.speechSynthesis) return;
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = currentLang === 'fr' ? 'fr-FR' : 'fr-FR'; // Fon n'est pas supporté nativement, on utilise le français
-        window.speechSynthesis.speak(utterance);
+    async function speakText(text) {
+        if (currentLang === 'fr') {
+            if (!window.speechSynthesis) return;
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'fr-FR';
+            window.speechSynthesis.speak(utterance);
+        } else {
+            // Appel au backend Python pour le TTS Fon (Modèle MMS)
+            try {
+                const response = await fetch('http://localhost:5000/tts', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text: text })
+                });
+                
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const audioUrl = URL.createObjectURL(blob);
+                    const audio = new Audio(audioUrl);
+                    audio.play();
+                } else {
+                    console.error("Erreur lors de la génération TTS Fon");
+                }
+            } catch (error) {
+                console.error("Impossible de contacter le serveur TTS Fon:", error);
+            }
+        }
     }
 
     // Recherche dans la base de connaissances (RAG thématique v4)

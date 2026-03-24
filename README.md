@@ -16,10 +16,23 @@ Ce chatbot intelligent a été conçu pour permettre à tout citoyen de poser de
 - **🔊 Synthèse Vocale (TTS)** : Lecture automatique des réponses par l'assistant pour une accessibilité maximale.
 - **📱 Design Premium** : Interface moderne, responsive et optimisée (Glassmorphism, Dark Mode).
 
-## 🚀 Utilisation
+## Installation & Utilisation
 
-1. Clonez ce dépôt sur votre machine locale.
-2. Ouvrez le fichier `index.html` dans n'importe quel navigateur moderne (Chrome, Firefox, Safari).
+### 1. Interface Web
+Ouvrez simplement le fichier `index.html` dans un navigateur moderne.
+
+### 2. Backend TTS Fon (Optionnel mais recommandé)
+Pour activer la synthèse vocale en langue Fon (modèle Facebook MMS) :
+1. Installez Python 3.9+
+2. Installez les dépendances :
+   ```bash
+   pip install -r requirements.txt
+   ```
+3. Lancez le serveur :
+   ```bash
+   python server.py
+   ```
+Le chatbot se connectera automatiquement à `http://localhost:5000` pour générer l'audio Fon.
 3. Sélectionnez votre langue préférée (FR ou FON).
 4. Tapez votre question ou utilisez le bouton **Micro** pour parler.
 
